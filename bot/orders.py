@@ -1,6 +1,5 @@
 """
 Order placement logic — sits between the CLI and the BinanceClient.
-Formats and prints order summaries; returns structured results.
 """
 
 from typing import Any
@@ -15,7 +14,7 @@ def _print_divider(char: str = "─", width: int = 60):
     print(char * width)
 
 
-def _print_order_request(symbol: str, side: str, order_type: str, quantity: float, price: float | None):
+def _print_order_request(symbol, side, order_type, quantity, price):
     _print_divider()
     print("  📋  ORDER REQUEST SUMMARY")
     _print_divider()
@@ -39,7 +38,7 @@ def _print_order_response(response: dict):
     print(f"  Type       : {response.get('type', 'N/A')}")
     print(f"  Status     : {response.get('status', 'N/A')}")
     print(f"  Exec Qty   : {response.get('executedQty', '0')}")
-    avg_price = response.get('avgPrice') or response.get('price', 'N/A')
+    avg_price = response.get("avgPrice") or response.get("price", "N/A")
     print(f"  Avg Price  : {avg_price}")
     print(f"  Time       : {response.get('updateTime', 'N/A')}")
     _print_divider()
@@ -53,34 +52,30 @@ def place_order(
     quantity: float,
     price: float | None = None,
 ) -> dict[str, Any]:
-    """
-    Place an order and print a formatted summary.
-
-    Returns a dict with keys:
-        success  (bool)
-        response (dict | None)
-        error    (str | None)
-    """
     _print_order_request(symbol, side, order_type, quantity, price)
 
     try:
+        # FIX: route price to the correct kwarg based on order type.
+        # STOP_MARKET needs stop_price=; LIMIT needs price=.
+        # Previously both used price=, so STOP_MARKET never sent stopPrice.
+        stop_price = price if order_type == "STOP_MARKET" else None
+        limit_price = price if order_type == "LIMIT" else None
+
         response = client.new_order(
             symbol=symbol,
             side=side,
             order_type=order_type,
             quantity=quantity,
-            price=price,
+            price=limit_price,
+            stop_price=stop_price,
         )
         _print_order_response(response)
         print(f"\n  🎉  Order placed successfully! Order ID: {response.get('orderId')}\n")
-        logger.info(
-            "Order success | orderId=%s status=%s",
-            response.get("orderId"),
-            response.get("status"),
-        )
+        logger.info("Order success | orderId=%s status=%s", response.get("orderId"), response.get("status"))
         return {"success": True, "response": response, "error": None}
 
     except BinanceClientError as exc:
         print(f"\n  ❌  Order failed: {exc}\n")
         logger.error("Order failed: %s", exc)
         return {"success": False, "response": None, "error": str(exc)}
+    
