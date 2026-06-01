@@ -1,8 +1,7 @@
 # Binance Futures Testnet Trading Bot
 
-A lightweight Python CLI application to place **Market**, **Limit**, and **Stop-Market** orders on the [Binance Futures Testnet (USDT-M)](https://testnet.binancefuture.com).
+A lightweight Python CLI application to place **Market**, **Limit**, and **Stop-Market** orders on the [Binance Futures Testnet (USDT-M)](https://demo.binance.com).
 
-Built as part of the **Python Developer Intern assignment** for Primetrade.ai.
 
 ---
 
@@ -29,7 +28,7 @@ trading_bot/
 
 ### 1. Get Testnet Credentials
 
-1. Go to [https://testnet.binancefuture.com](https://testnet.binancefuture.com)
+1. Go to [https://demo.binance.com](https://demo.binance.com)
 2. Log in with your GitHub or Google account
 3. Navigate to **API Management** → generate an API Key + Secret
 
@@ -91,7 +90,7 @@ python cli.py --help
 ```
 ╔══════════════════════════════════════════════════════╗
 ║       Binance Futures Testnet Trading Bot            ║
-║       Primetrade.ai Assignment — Python Dev Intern   ║
+║                                                      ║
 ╚══════════════════════════════════════════════════════╝
 
 ────────────────────────────────────────────────────────
